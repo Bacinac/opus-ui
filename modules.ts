@@ -29,3 +29,9 @@ export function modulesFor(
 export function moduleName(key: ModuleKey): string {
 	return ALL.find((m) => m.key === key)!.label;
 }
+
+export function moduleKey(name: string): ModuleKey {
+	const found = ALL.find((m) => m.label === name);
+	if (!found) throw new Error(`no OPUS module is called ${name}`);
+	return found.key;
+}

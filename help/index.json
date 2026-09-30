@@ -1,0 +1,119 @@
+[
+	{
+		"slug": "opus",
+		"group": "concepts",
+		"pages": { "library": ["/about"], "downloads": ["/about"], "player": ["/about"] },
+		"title": { "hr": "Što je OPUS", "en": "What OPUS is" },
+		"summary": {
+			"hr": "Kućna zbirka glazbe, filmova, serija, web-videozapisa i fotografija u tri modula: Library, Downloads i Player.",
+			"en": "A household collection of music, films, series, web video and photographs in three modules: Library, Downloads and Player."
+		}
+	},
+	{
+		"slug": "kinds",
+		"group": "concepts",
+		"title": { "hr": "Pet vrsta", "en": "Five kinds" },
+		"summary": {
+			"hr": "Glazba, filmovi, serije, web-videozapisi i fotografije dijele glagole, a ne imenice. Vrsta se pojavi kad postoji njezina mapa.",
+			"en": "Music, films, series, web video and photographs share their verbs and none of their nouns. A kind appears once its folder is there."
+		}
+	},
+	{
+		"slug": "roles",
+		"group": "concepts",
+		"pages": { "library": ["/account"], "downloads": ["/account"] },
+		"title": { "hr": "Uloge, profili i uređaji", "en": "Roles, profiles and devices" },
+		"summary": {
+			"hr": "Administrator, korisnik i gost. Profil kaže tko gleda, a televizor se pušta unutra kodom.",
+			"en": "Administrator, user and guest. A profile says who is watching, and a television is let in with a code."
+		}
+	},
+	{
+		"slug": "having",
+		"group": "concepts",
+		"title": { "hr": "Što znači imati", "en": "What having means" },
+		"summary": {
+			"hr": "Album se ima kad je cijeli i u traženoj kvaliteti, a film kad njegovi titlovi prođu provjeru.",
+			"en": "An album is had when it is whole and at the quality asked for, and a film when its subtitles pass the check."
+		}
+	},
+	{
+		"slug": "photos",
+		"group": "concepts",
+		"title": { "hr": "Fotografije", "en": "Photographs" },
+		"summary": {
+			"hr": "Čitaju se ondje gdje jesu, lica postaju osobe kroz godine, a svatko ima privatni šifrirani trezor.",
+			"en": "Read where they are, faces become people across the years, and everyone has a private encrypted vault."
+		}
+	},
+	{
+		"slug": "following",
+		"group": "operating",
+		"pages": { "library": ["/", "/search"] },
+		"title": { "hr": "Praćenje i pretraga", "en": "Following and search" },
+		"summary": {
+			"hr": "Ono što se prati stiže samo. Sve ostalo traži se u katalogu svoje vrste i dodaje u biblioteku.",
+			"en": "What is followed arrives on its own. Everything else is looked up in its kind's catalogue and added to the library."
+		}
+	},
+	{
+		"slug": "queue",
+		"group": "operating",
+		"pages": { "library": ["/downloads", "/incomplete"] },
+		"title": { "hr": "Red i ono što nedostaje", "en": "The queue and what is missing" },
+		"summary": {
+			"hr": "Jedan red za sve što je na putu, svaki redak u stanjima svoje vrste, i nepotpuni albumi imenom.",
+			"en": "One queue for everything on its way, each row in its own kind's states, and the incomplete albums by name."
+		}
+	},
+	{
+		"slug": "library-settings",
+		"group": "operating",
+		"pages": { "library": ["/settings", "/tags"] },
+		"title": { "hr": "Postavke Libraryja", "en": "Library settings" },
+		"summary": {
+			"hr": "Mape, predlošci imena, kvaliteta, titlovi i pragovi za lica uređuju se ovdje, a ne u datoteci.",
+			"en": "Folders, naming templates, quality, subtitles and the face thresholds are edited here, not in a file."
+		}
+	},
+	{
+		"slug": "engines",
+		"group": "operating",
+		"pages": { "downloads": ["/services", "/jobs", "/search", "/settings"] },
+		"title": { "hr": "Pogoni Downloadsa", "en": "The Downloads engines" },
+		"summary": {
+			"hr": "Jedno sučelje nad Usenetom, torrentom, Soulseekom i yt-dlp-om: traži, uzmi, prati i otkaži.",
+			"en": "One interface over Usenet, torrent, Soulseek and yt-dlp: search, grab, follow and cancel."
+		}
+	},
+	{
+		"slug": "watching",
+		"group": "operating",
+		"pages": { "player": ["/", "/movies", "/series", "/music", "/radio"] },
+		"title": { "hr": "Gledanje i slušanje", "en": "Watching and listening" },
+		"summary": {
+			"hr": "Police i otkrivanje, nastavak ondje gdje ste stali, preskakanje uvoda i slanje na televizor ili DAC.",
+			"en": "Shelves and discovery, picking up where you stopped, skipping the intro, and sending to the television or the DAC."
+		}
+	},
+	{
+		"slug": "player-photos",
+		"group": "operating",
+		"pages": { "player": ["/photos"] },
+		"title": { "hr": "Fotografije u Playeru", "en": "Photographs in Player" },
+		"summary": {
+			"hr": "Na današnji dan, godine, osobe, mjesta i kviz, slanje s telefona u album i s albuma na televizor.",
+			"en": "On this day, years, people, places and the quiz, sending from the phone to the album and from the album to the television."
+		}
+	},
+	{
+		"slug": "house",
+		"group": "operating",
+		"pages": { "player": ["/settings", "/settings/house"] },
+		"title": { "hr": "Postavke i kuća", "en": "Settings and the house" },
+		"summary": {
+			"hr": "Vaš profil, titlovi, povijest i trezor, a za administratora diskovi, profili, televizori i zvučni izlazi.",
+			"en": "Your profile, subtitles, history and vault, and for the administrator the disks, profiles, televisions and sound outputs."
+		}
+	}
+]

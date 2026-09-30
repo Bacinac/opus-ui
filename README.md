@@ -36,7 +36,8 @@ Ground
 Frame
 - `Shell` — the kit's `Frame` with the wordmark, the module's pages (each with
   one of `icons` for the phone's bottom bar), the way across to the other
-  modules and the alerts; a television gets the page and none of the frame
+  modules and the alerts; a television gets the page and none of the frame.
+  The frame's "?" opens this module's article of the page you are on
 - `About` — a module's `/about`: the kit's `About` under the module's lockup,
   with what the suite is said here and what the module does said by the module.
   `version` is the module's build, read from its `/api/version`
@@ -57,7 +58,13 @@ Behaviour
   `me.logout()`, `me.admin`, `me.guest`
 - `i18n.ts` — `registerModule()`, the kit's, with the OPUS words laid between
   the kit's and the module's; `Word` is both
-- `modules.ts` (`modulesFor`, `moduleName`), `media.ts` (`episodeCode`,
+- `help.ts` (`helpFor`) and `help/` — the help of the whole suite: one
+  `index.json` whose articles name their pages per module (`{"library":
+  ["/tags"], "player": ["/music"]}`, since `/settings` is three pages), and a
+  body per language. A module adds only `routes/help` and `routes/help/[slug]`
+  over the kit's `HelpIndex` and `HelpPage`; opus-core's check holds the
+  articles to the module's routes
+- `modules.ts` (`modulesFor`, `moduleName`, `moduleKey`), `media.ts` (`episodeCode`,
   `videoStateMark`), `photos.ts` (`tileOf`, `previewOf`, `playOf`, `aboutOf`,
   `cropOf`, `portraitOf`, `morphOf`, `placeholderOf`, `groundOf`)
 - `words/` — the words these components say, in Croatian and English

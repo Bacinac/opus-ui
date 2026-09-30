@@ -15,6 +15,8 @@
 	import NewVersion from '../kit/NewVersion.svelte';
 	import Wordmark from './Wordmark.svelte';
 	import { version } from './version.svelte';
+	import { helpFor } from './help';
+	import { moduleKey } from './modules';
 	import { onMount } from 'svelte';
 	import { beforeNavigate } from '$app/navigation';
 
@@ -90,6 +92,8 @@
 		children?: import('svelte').Snippet;
 	} = $props();
 
+	const help = $derived(helpFor(moduleKey(module)));
+
 	const ways = $derived(
 		modules.filter((m) => owner || m.label === module || !OWNER_ONLY.includes(m.key))
 	);
@@ -145,6 +149,7 @@
 		{pathname}
 		sections={[nav]}
 		version={version.label}
+		{help}
 		account={account
 			? { name: account.username, href: account.href, onlogout: account.onlogout, items }
 			: undefined}

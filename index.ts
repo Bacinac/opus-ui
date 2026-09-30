@@ -11,7 +11,8 @@
 // `$lib/opus/PhotoTimeline.svelte` — by the modules that draw them.
 
 export { me, type Role, type Session } from './me.svelte';
-export { modulesFor, moduleName, type ModuleKey } from './modules';
+export { modulesFor, moduleName, moduleKey, type ModuleKey } from './modules';
+export { helpFor } from './help';
 export { episodeCode, videoStateMark } from './media';
 export { tileOf, previewOf, playOf, aboutOf, cropOf, portraitOf, morphOf, placeholderOf, groundOf, regrouping, unlessRegrouping } from './photos';
 export { default as EpisodeRow } from './EpisodeRow.svelte';
