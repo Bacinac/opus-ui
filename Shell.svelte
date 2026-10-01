@@ -42,6 +42,7 @@
 		modules = [],
 		alerts = [],
 		heading = true,
+		noticesHeight = $bindable(0),
 		back,
 		backLabel = '',
 		owner = true,
@@ -72,6 +73,9 @@
 		 * of a television. It keeps the alerts and the page, and none of the
 		 * frame. */
 		heading?: boolean;
+		/** how tall the notices stand above the page, for a module without the
+		 * frame that pins its page to the window and has to start below them */
+		noticesHeight?: number;
 		/** whether the person signed in maintains the install. A module that does
 		 * not know says nothing and every way stays open: the door refuses, not
 		 * the frame, and a first-run install has no roster to be a member of. */
@@ -188,11 +192,11 @@
 
 {#snippet notices()}
 	{#if alerts.length}
-		<div class="notices">
+		<div class="notices" bind:offsetHeight={noticesHeight}>
 			{#each alerts as alert (alert.key)}
 				<div class="alert" class:quiet={alert.tone === 'quiet'}>
 					{#if alert.href}
-						<a href={alert.href}>{alert.message}</a>
+						<a href={alert.href} data-sveltekit-reload>{alert.message}</a>
 					{:else}
 						<span>{alert.message}</span>
 					{/if}
