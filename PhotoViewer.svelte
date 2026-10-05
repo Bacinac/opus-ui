@@ -10,7 +10,7 @@
 	// goes through an evening's photographs and a wait between each one turns
 	// that into work.
 
-	import type { Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import ArmedButton from '../kit/ArmedButton.svelte';
 	import Button from '../kit/Button.svelte';
 	import { cssUrl } from '../kit/css';
@@ -108,6 +108,25 @@
 
 	const here = layer();
 	$effect(() => here.drop);
+	let panel = $state<HTMLElement | null>(null);
+	const stops = () => [...(panel?.querySelectorAll<HTMLElement>(
+		'button:not([disabled]), a[href], input:not([disabled]), video[controls], [tabindex]:not([tabindex="-1"])'
+	) ?? [])].filter((el) => el.offsetParent !== null || el.getClientRects().length > 0);
+	onMount(() => {
+		const before = document.activeElement as HTMLElement | null;
+		const overflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+		panel?.focus();
+		const contain = () => {
+			if (here.top() && !panel?.contains(document.activeElement)) panel?.focus();
+		};
+		document.addEventListener('focusin', contain, true);
+		return () => {
+			document.removeEventListener('focusin', contain, true);
+			document.body.style.overflow = overflow;
+			if (before?.isConnected) before.focus();
+		};
+	});
 
 	function key(e: KeyboardEvent) {
 		if (naming || e.key !== 'Escape' || !here.top()) return;
@@ -115,22 +134,32 @@
 		e.preventDefault();
 	}
 
-	/** The arrows belong to the photograph while it is open — all four of them,
-	 *  including the two this does nothing with. A ten-foot surface answers the
-	 *  arrows itself, and what it walks is the shelf lying under this: pressing
-	 *  down moved the ring onto a picture nobody can see, and right off the last
-	 *  photograph of a year it walked out of the viewer into the next row.
-	 *
-	 *  In the capture phase, because the surface put its listener on the window
-	 *  first and refusing the key afterwards was already too late. Escape is not
-	 *  taken here: going back is one ladder for the whole application, and a
-	 *  viewer that closed itself before the ladder ran left the ladder to take
-	 *  the step after it — one press, two levels. */
 	function walk(e: KeyboardEvent) {
-		if (naming || !e.key.startsWith('Arrow') || !here.top()) return;
-		if (e.key === 'ArrowLeft' && hasPrev) onprev?.();
-		else if (e.key === 'ArrowRight' && hasNext) onnext?.();
+		if (!here.top() || !panel) return;
+		const active = document.activeElement;
+		const offered = stops();
+		if (e.key === 'Tab') {
+			if (!offered.length) panel.focus();
+			else if (!panel.contains(active) || active === panel ||
+				(e.shiftKey ? active === offered[0] : active === offered.at(-1))) {
+				(e.shiftKey ? offered.at(-1)! : offered[0]).focus();
+			} else return;
+		} else if (!naming && e.key.startsWith('Arrow')) {
+			const controls = offered.filter((el) => !el.classList.contains('step'));
+			const at = controls.indexOf(active as HTMLElement);
+			if (at < 0) {
+				if (e.key === 'ArrowLeft' && hasPrev) onprev?.();
+				else if (e.key === 'ArrowRight' && hasNext) onnext?.();
+				else if (e.key === 'ArrowUp') controls[0]?.focus();
+				else if (e.key === 'ArrowDown') (controls[1] ?? controls[0])?.focus();
+			} else if (e.key === 'ArrowUp') panel.focus();
+			else {
+				const direction = e.key === 'ArrowLeft' ? -1 : 1;
+				controls[(at + direction + controls.length) % controls.length]?.focus();
+			}
+		} else if (e.key !== 'Enter' || active !== panel) return;
 		e.preventDefault();
+		e.stopImmediatePropagation();
 	}
 
 	$effect(() => {
@@ -237,6 +266,7 @@
 	aria-modal="true"
 	aria-label={photo.taken_at ? formatDateTime(photo.taken_at) : t('photos.photo')}
 	tabindex="-1"
+	bind:this={panel}
 	onpointerdown={down}
 	onpointerup={up}
 >
