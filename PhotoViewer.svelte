@@ -106,7 +106,10 @@
 		spread = d.photographs;
 	}
 
-	const here = layer();
+	const here = layer(() => {
+		if (naming) naming = false;
+		else onclose();
+	});
 	$effect(() => here.drop);
 	let panel = $state<HTMLElement | null>(null);
 	const stops = () => [...(panel?.querySelectorAll<HTMLElement>(
@@ -128,17 +131,14 @@
 		};
 	});
 
-	function key(e: KeyboardEvent) {
-		if (naming || e.key !== 'Escape' || !here.top()) return;
-		onclose();
-		e.preventDefault();
-	}
-
 	function walk(e: KeyboardEvent) {
 		if (!here.top() || !panel) return;
 		const active = document.activeElement;
 		const offered = stops();
-		if (e.key === 'Tab') {
+		if (e.key === 'Escape') {
+			if (naming) return;
+			onclose();
+		} else if (e.key === 'Tab') {
 			if (!offered.length) panel.focus();
 			else if (!panel.contains(active) || active === panel ||
 				(e.shiftKey ? active === offered[0] : active === offered.at(-1))) {
@@ -256,9 +256,6 @@
 		else if (dx < 0 && hasNext) onnext?.();
 	}
 </script>
-
-
-<svelte:window onkeydown={key} />
 
 <div
 	class="shade"

@@ -3,6 +3,7 @@ import { afterEach, expect, test, vi } from 'vitest';
 import { flushSync, mount, unmount } from 'svelte';
 import PhotoViewer from './PhotoViewer.svelte';
 import { registerModule } from './i18n';
+import { dismissLayer } from '$lib/kit/layers';
 
 registerModule({ hr: {}, en: {} });
 let viewer: ReturnType<typeof mount> | null = null;
@@ -19,6 +20,9 @@ test('focus stays in the viewer, every D-pad action is reachable, and closing re
 	behind.focus();
 	const prev = vi.fn(), next = vi.fn(), close = vi.fn(), turn = vi.fn();
 	const underlying = vi.fn();
+	const pageBack = vi.fn();
+	window.addEventListener('keydown', pageBack);
+	const removeBack = () => window.removeEventListener('keydown', pageBack);
 	behind.onclick = underlying;
 	flushSync(() => {
 		viewer = mount(PhotoViewer, { target: document.querySelector('main')!, props: {
@@ -55,6 +59,14 @@ test('focus stays in the viewer, every D-pad action is reachable, and closing re
 	expect(document.activeElement?.classList.contains('close')).toBe(true);
 	behind.focus();
 	expect(document.activeElement).toBe(panel);
+	pageBack.mockClear();
+	key('Escape');
+	expect(close).toHaveBeenCalledOnce();
+	expect(pageBack).not.toHaveBeenCalled();
+	close.mockClear();
+	expect(dismissLayer()).toBe(true);
+	expect(close).toHaveBeenCalledOnce();
+	removeBack();
 	await unmount(viewer!);
 	viewer = null;
 	expect(document.activeElement).toBe(behind);
