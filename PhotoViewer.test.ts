@@ -3,7 +3,7 @@ import { afterEach, expect, test, vi } from 'vitest';
 import { flushSync, mount, unmount } from 'svelte';
 import PhotoViewer from './PhotoViewer.svelte';
 import { registerModule } from './i18n';
-import { dismissLayer } from '$lib/kit/layers';
+import { dismissLayer } from '#lib/kit/layers.js';
 
 registerModule({ hr: {}, en: {} });
 let viewer: ReturnType<typeof mount> | null = null;

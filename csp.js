@@ -2,6 +2,7 @@
 // rendered page, with a fresh nonce on its own scripts and on the theme script
 // in app.html; it replaces the header server.mjs puts on everything, so it has
 // to carry frame-ancestors itself.
+/** @type {import('@sveltejs/kit/vite').Config['csp']} */
 export const csp = {
 	mode: 'nonce',
 	directives: {

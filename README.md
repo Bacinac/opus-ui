@@ -24,8 +24,9 @@ Ground
   palette. A mask names `black`, since only its opacity counts
 - `kinds.ts` — `Kind`, the names a `Tag` or a counted fact is painted by
 - `app.html` — the page template; a module links `src/app.html` to it
-- `csp.js` — the page policy (`kit.csp` in every module's `svelte.config.js`):
-  scripts only from the module itself or under the per-request nonce
+- `csp.js` — the page policy (`csp` of the `sveltekit()` plugin in every
+  module's `vite.config.ts`): scripts only from the module itself or under the
+  per-request nonce
 - `server.mjs` — the production server: the built app, `/api` proxied to
   `OPUS_API_URL` (required), websocket upgrades, and upstream streams dropped
   when the reader leaves, and the client address the backend is told: from a
@@ -101,7 +102,7 @@ ln -s lib/opus/app.html frontend/src/app.html
 ```ts
 import { hr } from './hr';
 import { en } from './en';
-import { registerModule, type Word } from '$lib/opus';
+import { registerModule, type Word } from '#lib/opus/index.js';
 
 export type MessageKey = keyof typeof hr | Word;
 export const t = registerModule({ hr, en });
@@ -113,9 +114,9 @@ export const t = registerModule({ hr, en });
 <script lang="ts">
 	import '../app.css';
 	import { page } from '$app/state';
-	import { Toasts, onUnauthorized } from '$lib/kit';
-	import { Login, Shell, me } from '$lib/opus';
-	import { MODULE, MODULES } from '$lib/core/modules';
+	import { Toasts, onUnauthorized } from '#lib/kit/index.js';
+	import { Login, Shell, me } from '#lib/opus/index.js';
+	import { MODULE, MODULES } from '#lib/core/modules.js';
 
 	let { children } = $props();
 	onUnauthorized(() => (me.open = false));

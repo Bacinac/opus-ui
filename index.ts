@@ -8,7 +8,7 @@
 // `thumbhash`, and a barrel is resolved whole by whoever imports from it. Listed
 // here, a module that will never draw a photograph fails to build for want of a
 // package it has no use for. They are imported by path —
-// `$lib/opus/PhotoTimeline.svelte` — by the modules that draw them.
+// `#lib/opus/PhotoTimeline.svelte` — by the modules that draw them.
 
 export { me, type Role, type Session } from './me.svelte';
 export { modulesFor, moduleName, moduleKey, type ModuleKey } from './modules';
