@@ -12,7 +12,6 @@
 	import { i18n } from '../kit/i18n.svelte';
 	import Frame, { type AccountItem, type Section } from '../kit/Frame.svelte';
 	import Toasts from '../kit/Toasts.svelte';
-	import NewVersion from '../kit/NewVersion.svelte';
 	import Wordmark from './Wordmark.svelte';
 	import { version } from './version.svelte';
 	import { helpFor } from './help';
@@ -207,7 +206,6 @@
 {/snippet}
 
 <Toasts />
-<NewVersion watch={version} />
 
 <style>
 	/* With the rest of the chrome rather than against the wordmark, which is an
