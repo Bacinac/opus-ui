@@ -6,6 +6,7 @@ Stranica **Preuzimanja** jedan je popis svega što je na putu, iz svih vrsta. Po
 2. Downloads ga preuzme i javi gdje je u zoni za preuzimanje.
 3. Library provjeri što je stiglo, imenuje datoteke po predlošku i premjesti ih u biblioteku.
 4. Što ne prođe provjeru, odbija se. Film ili epizoda koji su jednom pali pamte se i više se ne uzimaju.
+5. Od preuzimanja koje 24 sata stoji na nuli, primjerice torrenta koji nitko ne dijeli, odustaje se uz navedeni razlog i uzima se sljedeće izdanje.
 
 ## Stanja
 

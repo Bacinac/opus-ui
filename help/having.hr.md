@@ -21,7 +21,7 @@ Titlovi se ne zaključuju iz naziva izdanja. Što datoteka stvarno nosi, čita *
 
 ## Film i serija: slika
 
-Filmovi se zadano traže u 2160p (4K), a serije u 1080p. Film se gleda jednom, na najboljoj slici koju kuća može prikazati, a serija traje četrdeset sati, pa bi 4K za isti kauč trošio višestruko više diska. Izdanje s premalo megabita u sekundi za svoju rezoluciju odbacuje se kao napuhana ili loša slika, a izdanje s previše troši disk na ono što televizor ne može pokazati.
+Filmovi se zadano traže u 2160p (4K), a serije u 1080p. Ispravno izdanje s Useneta u 1080p ili boljem ipak se uzima prije svakog torrenta, jer stigne za nekoliko minuta. Ako je bila ponuđena oštrija kopija, film ili epizoda to pamti i preuzme je kad stigne prva, a pri uvozu oštrija zamijeni prvu. Film se gleda jednom, na najboljoj slici koju kuća može prikazati, a serija traje četrdeset sati, pa bi 4K za isti kauč trošio višestruko više diska. Izdanje s premalo megabita u sekundi za svoju rezoluciju odbacuje se kao napuhana ili loša slika, a izdanje s previše troši disk na ono što televizor ne može pokazati.
 
 ## Naslov i identitet
 

@@ -21,7 +21,7 @@ Subtitles are not inferred from the release name. What the file really carries i
 
 ## A film and a series: the picture
 
-Films are looked for in 2160p (4K) by default and series in 1080p. A film is watched once, on the best picture the house can show, while a series lasts forty hours, and 4K would spend many times the disk for the same sofa. A release with too few megabits per second for its resolution is set aside as an upscale or a poor picture, and one with too many spends disk on what the television cannot show.
+Films are looked for in 2160p (4K) by default and series in 1080p. A sound Usenet release at 1080p or sharper still goes ahead of every torrent, because it lands in minutes. When a sharper copy was on offer, the film or episode remembers it and fetches it once the first is in, and on import the sharper one replaces the first. A film is watched once, on the best picture the house can show, while a series lasts forty hours, and 4K would spend many times the disk for the same sofa. A release with too few megabits per second for its resolution is set aside as an upscale or a poor picture, and one with too many spends disk on what the television cannot show.
 
 ## Title and identity
 

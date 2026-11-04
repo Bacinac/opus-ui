@@ -24,8 +24,8 @@
 		"pages": { "library": ["/account"], "downloads": ["/account"] },
 		"title": { "hr": "Uloge, profili i uređaji", "en": "Roles, profiles and devices" },
 		"summary": {
-			"hr": "Administrator, korisnik i gost. Profil kaže tko gleda, a televizor se pušta unutra kodom.",
-			"en": "Administrator, user and guest. A profile says who is watching, and a television is let in with a code."
+			"hr": "Administrator, korisnik i gost. Profil kaže tko gleda, a televizor se pušta unutra kodom i može biti nečiji.",
+			"en": "Administrator, user and guest. A profile says who is watching, and a television is let in with a code and can be somebody's."
 		}
 	},
 	{
@@ -92,8 +92,8 @@
 		"pages": { "player": ["/", "/movies", "/series", "/music", "/radio"] },
 		"title": { "hr": "Gledanje i slušanje", "en": "Watching and listening" },
 		"summary": {
-			"hr": "Police i otkrivanje, nastavak ondje gdje ste stali, preskakanje uvoda i slanje na televizor ili DAC.",
-			"en": "Shelves and discovery, picking up where you stopped, skipping the intro, and sending to the television or the DAC."
+			"hr": "Police i otkrivanje, nastavak ondje gdje ste stali, što se i kako pušta, tekst pjesme te slanje na televizor ili DAC.",
+			"en": "Shelves and discovery, picking up where you stopped, what is playing and how, lyrics, and sending to the television or the DAC."
 		}
 	},
 	{

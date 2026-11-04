@@ -12,6 +12,10 @@ A child of three and of thirteen do not look alike, so groups are gathered withi
 - once a birth date is known, a group with photographs older than it cannot belong to that person;
 - **Not this person** takes a group off a person that it does not belong to, and its faces stay for the right name.
 
+## Place
+
+Where a photograph was taken is read from the photograph itself. When it is missing or wrong, the admin types it in the open photograph by pressing its place (**+ place** when there is none): while they type, towns from the list are offered, the countries the archive has been to before the rest. The town picked brings its country and coordinates and is written on that photograph alone (**just this one**) or on the whole day (**the whole day**). Typed coordinates stay when the photograph is read again, so a camera with a bad fix does not put the wrong country back.
+
 ## Family
 
 A person with an account in the household is family by that account, and anyone else can be marked **Family**. Only family may appear on the screensaver.

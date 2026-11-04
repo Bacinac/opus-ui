@@ -12,6 +12,10 @@ Dijete od tri i od trinaest godina ne izgleda isto, pa se skupine slažu unutar 
 - kad je poznat datum rođenja, skupina s fotografijama starijima od njega ne može pripasti toj osobi;
 - skupinu koja ne pripada osobi skida **Nije ova osoba**, a lica ostaju za pravo ime.
 
+## Mjesto
+
+Mjesto snimanja čita se iz same fotografije. Kad ga nema ili je krivo, administrator ga u otvorenoj fotografiji upiše pritiskom na mjesto (**+ mjesto** kad ga nema): dok tipka, nude se naselja s popisa, a države u kojima je arhiva već bila prije ostalih. Odabrano naselje donosi svoju državu i koordinate i upisuje se samo toj fotografiji (**samo ova**) ili cijelom danu (**cijeli dan**). Upisane koordinate ostaju i kad se fotografija ponovno pročita, pa kamera s krivim GPS-om ne vraća krivu državu.
+
 ## Obitelj
 
 Osoba koja ima račun u kućanstvu obitelj je po računu, a ostale se mogu označiti kao **Obitelj**. Samo obitelj smije se pojaviti na čuvaru zaslona.

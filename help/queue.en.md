@@ -6,6 +6,7 @@ The **Downloads** page is one list of everything on its way, of every kind. The 
 2. Downloads fetches it and reports where it is in the landing zone.
 3. Library checks what arrived, names the files by the template and moves them into the library.
 4. What fails the check is rejected. A film or an episode that failed once is remembered and never taken again.
+5. A download still at nothing after 24 hours, such as a torrent nobody seeds, is given up with its reason, and the next release is taken.
 
 ## States
 
