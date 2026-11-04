@@ -45,6 +45,7 @@ export const hr = {
 	'devices.hint': 'Uređaj prikazuje kôd na svom zaslonu. Prepišite ga ovdje i dajte uređaju ime po kojem ćete ga prepoznati.',
 	'devices.household': 'kućanstvo',
 	'devices.lastSeen': 'zadnji put viđen {when}',
+	'devices.app': 'izdanje {version}',
 	'devices.letIn': 'Odobri uređaj',
 	'devices.letInBy': 'pristup odobrio {who}',
 	'devices.name': 'Naziv uređaja',

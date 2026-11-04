@@ -28,6 +28,8 @@
 		let_in_by: string;
 		let_in_at: string | null;
 		seen_at: string | null;
+		/** the build of the app it was running then; empty if it never said */
+		app: string;
 		/** whose box it is; null is the household's */
 		person: string | null;
 	};
@@ -124,7 +126,8 @@
 								<span class="named">{box.name}</span>
 								<span class="note">
 									{#if box.seen_at}
-										{t('devices.lastSeen', { when: formatDateTime(box.seen_at) })}
+										{t('devices.lastSeen', { when: formatDateTime(box.seen_at) })}{#if box.app}
+											· {t('devices.app', { version: box.app })}{/if}
 									{:else if !box.collected}
 										{t('devices.notCollected')}
 									{:else}

@@ -43,6 +43,7 @@ export const en = {
 	'devices.hint': 'The box shows a code on its own screen. Type it here and give the box a name you will recognise it by.',
 	'devices.household': 'household',
 	'devices.lastSeen': 'last seen {when}',
+	'devices.app': 'version {version}',
 	'devices.letIn': 'Let a box in',
 	'devices.letInBy': 'let in by {who}',
 	'devices.name': 'Name for this box',
