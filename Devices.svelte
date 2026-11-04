@@ -126,8 +126,12 @@
 								<span class="named">{box.name}</span>
 								<span class="note">
 									{#if box.seen_at}
-										{t('devices.lastSeen', { when: formatDateTime(box.seen_at) })}{#if box.app}
-											· {t('devices.app', { version: box.app })}{/if}
+										{[
+											t('devices.lastSeen', { when: formatDateTime(box.seen_at) }),
+											box.app && t('devices.app', { version: box.app })
+										]
+											.filter(Boolean)
+											.join(' · ')}
 									{:else if !box.collected}
 										{t('devices.notCollected')}
 									{:else}
