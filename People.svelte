@@ -19,7 +19,8 @@
 	import Button from '../kit/Button.svelte';
 	import Card from '../kit/Card.svelte';
 	import Field from '../kit/Field.svelte';
-	import Picks from '../kit/Picks.svelte';
+	import Hint from '../kit/Hint.svelte';
+	import Picks, { type Pick } from '../kit/Picks.svelte';
 	import Tag from '../kit/Tag.svelte';
 
 	type Person = {
@@ -27,7 +28,13 @@
 		display: string;
 		role: string;
 		disabled: boolean;
+		/** which face in the photographs this account is */
+		person_id: number | null;
+		/** a guest's: the people whose photographs they see */
+		circle: number[];
 	};
+
+	type Face = { id: number; name: string };
 
 	let people = $state<Person[]>([]);
 	let working = $state('');
@@ -53,6 +60,8 @@
 
 	let opened = $state('');
 	let renaming = $state('');
+	let faces = $state<Face[]>([]);
+	let seeking = $state('');
 	let secret = $state('');
 	let secretAgain = $state('');
 
@@ -109,8 +118,47 @@
 		opened = opened === person.name ? '' : person.name;
 		renaming = person.display === person.name ? '' : person.display;
 		secret = secretAgain = '';
+		seeking = '';
 		problem = '';
 		added = '';
+		if (opened && !faces.length) loadFaces();
+	}
+
+	async function loadFaces() {
+		const named = await request<Face[]>('/api/photos/people');
+		if (named) faces = named;
+	}
+
+	const fold = (said: string) =>
+		said
+			.normalize('NFD')
+			.replace(/\p{M}/gu, '')
+			.toLowerCase();
+
+	/** The faces already chosen, then those the search names — never the whole
+	 * album's hundred and more at once. */
+	function offered(kept: number[]): Pick[] {
+		const sought = fold(seeking.trim());
+		const found = sought
+			? faces.filter((f) => !kept.includes(f.id) && fold(f.name).includes(sought)).slice(0, 12)
+			: [];
+		return [...faces.filter((f) => kept.includes(f.id)), ...found].map((f) => ({
+			key: String(f.id),
+			label: f.name
+		}));
+	}
+
+	function face(person: Person, key: string) {
+		const id = Number(key);
+		amend(person, id === person.person_id ? { unlink: true } : { person_id: id });
+	}
+
+	function circle(person: Person, key: string) {
+		const id = Number(key);
+		const kept = person.circle.includes(id)
+			? person.circle.filter((one) => one !== id)
+			: [...person.circle, id];
+		amend(person, { circle: kept });
 	}
 
 	const amend = (person: Person, change: Record<string, unknown>) =>
@@ -199,6 +247,39 @@
 								onpick={(role) => amend(person, { role })}
 							/>
 						</div>
+
+						{#if person.role !== 'admin'}
+							<Field
+								id="f-{person.name}"
+								label={t('people.seek')}
+								bind:value={seeking}
+								autocomplete="off"
+							/>
+							<div class="pair">
+								<span class="what">{t('people.face')}</span>
+								<Picks
+									picks={offered(person.person_id ? [person.person_id] : [])}
+									chosen={person.person_id ? [String(person.person_id)] : []}
+									disabled={!!working}
+									onpick={(key) => face(person, key)}
+								/>
+							</div>
+							{#if person.role === 'guest'}
+								<div class="pair">
+									<span class="what">
+										{t('people.circle')}
+										<Hint text={t('people.circleHint')} />
+									</span>
+									<Picks
+										many
+										picks={offered(person.circle)}
+										chosen={person.circle.map(String)}
+										disabled={!!working}
+										onpick={(key) => circle(person, key)}
+									/>
+								</div>
+							{/if}
+						{/if}
 
 						<div class="row">
 							<Button

@@ -17,6 +17,8 @@
 	import Button from '../kit/Button.svelte';
 	import Card from '../kit/Card.svelte';
 	import Field from '../kit/Field.svelte';
+	import Hint from '../kit/Hint.svelte';
+	import Picks, { type Pick } from '../kit/Picks.svelte';
 
 	type Device = {
 		id: number;
@@ -26,9 +28,14 @@
 		let_in_by: string;
 		let_in_at: string | null;
 		seen_at: string | null;
+		/** whose box it is; null is the household's */
+		person: string | null;
 	};
 
+	type Person = { name: string; display: string; role: string; disabled: boolean };
+
 	let devices = $state<Device[]>([]);
+	let people = $state<Person[]>([]);
 	let code = $state('');
 	let name = $state('');
 	let working = $state(false);
@@ -40,8 +47,30 @@
 	load();
 
 	async function load() {
-		const said = await request<{ devices: Device[] }>('/api/auth/devices');
+		const [said, roster] = await Promise.all([
+			request<{ devices: Device[] }>('/api/auth/devices'),
+			request<{ people: Person[] }>('/api/auth/people')
+		]);
 		if (said) devices = said.devices;
+		if (roster) people = roster.people;
+	}
+
+	// an admin keeps the place and is nobody's television
+	const owners = $derived<Pick[]>([
+		{ key: '', label: t('devices.household') },
+		...people
+			.filter((p) => p.role !== 'admin' && !p.disabled)
+			.map((p) => ({ key: p.name, label: p.display || p.name }))
+	]);
+
+	async function own(device: Device, person: string) {
+		working = true;
+		const said = await request(
+			`/api/auth/devices/${device.id}`,
+			json({ person: person || null }, 'PATCH')
+		);
+		working = false;
+		if (said) await load();
 	}
 
 	async function letIn(event: SubmitEvent) {
@@ -120,6 +149,18 @@
 									>
 										{t('common.save')}
 									</Button>
+								</div>
+								<div class="pair">
+									<span class="said">
+										{t('devices.whose')}
+										<Hint text={t('devices.whoseHint')} />
+									</span>
+									<Picks
+										picks={owners}
+										chosen={[box.person ?? '']}
+										disabled={working}
+										onpick={(person) => own(box, person)}
+									/>
 								</div>
 								<div>
 									<ArmedButton onconfirm={() => takeBack(box)} disabled={working}>
@@ -228,6 +269,11 @@
 		gap: 0.5rem;
 		align-items: flex-end;
 		flex-wrap: wrap;
+	}
+	.said {
+		font-size: var(--fs-m);
+		color: var(--muted);
+		align-self: center;
 	}
 	.note,
 	.quiet {
