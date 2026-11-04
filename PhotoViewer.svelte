@@ -15,7 +15,7 @@
 	import Button from '../kit/Button.svelte';
 	import { cssUrl } from '../kit/css';
 	import { json, Latest, request } from '../kit/http';
-	import { formatDateTime, formatNumber, plural, t } from '../kit/i18n.svelte';
+	import { formatDateTime, formatNumber, i18n, plural, t } from '../kit/i18n.svelte';
 	import { layer } from '../kit/layers';
 	import { aboutOf, playOf, previewOf, unlessRegrouping } from './photos';
 	import Tag from '../kit/Tag.svelte';
@@ -92,13 +92,21 @@
 	} = $props();
 
 	/** A place is typed for the day, not for the photograph: a trip is not entered
-	 * one picture at a time. */
+	 * one picture at a time. What is typed is a town the library knows, so the
+	 * place brings its country and coordinates with it. */
 	async function callIt(whole: boolean) {
-		const name = said.trim();
-		if (!name) return;
+		const typed = said.trim();
+		if (!typed) return;
+		const town =
+			picked?.name === typed
+				? picked
+				: heard === typed
+					? towns[0]
+					: ((await request<Town[]>(townsOf(typed))) ?? [])[0];
+		if (!town) return;
 		const d = await request<{ place: string; photographs: number }>(
 			`${aboutOf(photo.id)}/place`,
-			json({ name, day: whole }, 'PUT')
+			json({ settlement: town.id, day: whole }, 'PUT')
 		);
 		if (!d) return;
 		place = d.place;
@@ -203,6 +211,31 @@
 	let said = $state('');
 	let spread = $state(0);
 	const asking = new Latest();
+
+	type Town = { id: number; name: string; country: string; region: string };
+	let towns = $state<Town[]>([]);
+	let heard = $state('');
+	let picked = $state<Town | null>(null);
+	const looking = new Latest();
+	const countries = $derived(new Intl.DisplayNames([i18n.locale], { type: 'region' }));
+	const townsOf = (typed: string) => `/api/photos/settlements?q=${encodeURIComponent(typed)}`;
+	$effect(() => {
+		const typed = said.trim();
+		if (!naming || typed.length < 2) {
+			towns = [];
+			heard = '';
+			return;
+		}
+		const wait = setTimeout(async () => {
+			const got = await request<Town[]>(townsOf(typed), {}, { latest: looking });
+			if (!got) return;
+			towns = got;
+			heard = typed;
+		}, 200);
+		return () => clearTimeout(wait);
+	});
+	let meant = $derived(picked?.name === said.trim() ? picked : (towns[0] ?? null));
+
 	$effect(() => {
 		const id = photo.id;
 		// turning drops the faces and finds them again in the new frame
@@ -221,6 +254,7 @@
 			where = d.where ?? null;
 			naming = false;
 			said = '';
+			picked = null;
 			spread = 0;
 		});
 	});
@@ -359,8 +393,8 @@
 		{#if photo.taken_at}
 			<p class="when">{formatDateTime(photo.taken_at)}</p>
 		{/if}
-		<p class="place">
-			{#if naming}
+		{#if naming}
+			<p class="place">
 				<input
 					use:takeFocus
 					bind:value={said}
@@ -370,28 +404,52 @@
 						else if (e.key === 'Escape') naming = false;
 					}}
 				/>
-				<Tag onpicture onclick={() => callIt(true)}>{t('photos.wholeDay')}</Tag>
-				<Tag onpicture onclick={() => callIt(false)}>{t('photos.thisOne')}</Tag>
-			{:else if canEdit}
-				<Tag
-					onpicture
-					tone={place ? 'fact' : 'quiet'}
-					onclick={() => {
-						naming = true;
-						said = place ?? '';
-					}}
-				>
-					{place ?? (where ? t('photos.unnamedPlace') : t('photos.whereUnknown'))}
-				</Tag>
-			{:else if place}
-				<Tag onpicture>{place}</Tag>
+				{#if meant}
+					<Tag onpicture onclick={() => callIt(true)}>{t('photos.wholeDay')}</Tag>
+					<Tag onpicture onclick={() => callIt(false)}>{t('photos.thisOne')}</Tag>
+				{:else if heard}
+					<Tag onpicture tone="quiet">{t('photos.noSettlement')}</Tag>
+				{/if}
+			</p>
+			{#if towns.length}
+				<p class="place">
+					{#each towns as town (town.id)}
+						<Tag
+							onpicture
+							tone={town.id === meant?.id ? 'fact' : 'quiet'}
+							onclick={() => {
+								picked = town;
+								said = town.name;
+							}}
+						>
+							{[town.name, town.region, countries.of(town.country)].filter(Boolean).join(' · ')}
+						</Tag>
+					{/each}
+				</p>
 			{/if}
-			{#if spread > 1}
-				<Tag onpicture tone="quiet">
-					{plural(spread, 'photos.placeSpread.one', 'photos.placeSpread.few', 'photos.placeSpread.many')}
-				</Tag>
-			{/if}
-		</p>
+		{:else}
+			<p class="place">
+				{#if canEdit}
+					<Tag
+						onpicture
+						tone={place ? 'fact' : 'quiet'}
+						onclick={() => {
+							naming = true;
+							said = place ?? '';
+						}}
+					>
+						{place ?? (where ? t('photos.unnamedPlace') : t('photos.whereUnknown'))}
+					</Tag>
+				{:else if place}
+					<Tag onpicture>{place}</Tag>
+				{/if}
+				{#if spread > 1}
+					<Tag onpicture tone="quiet">
+						{plural(spread, 'photos.placeSpread.one', 'photos.placeSpread.few', 'photos.placeSpread.many')}
+					</Tag>
+				{/if}
+			</p>
+		{/if}
 		{#if faces.length}
 			<p class="who">
 				{#each faces.filter((f) => f.person) as f (f.id)}

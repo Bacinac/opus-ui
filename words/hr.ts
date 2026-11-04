@@ -102,6 +102,7 @@ export const hr = {
 	'photos.empty': 'Ovdje još nema fotografija.',
 	'photos.jump': 'Skoči na razdoblje',
 	'photos.next': 'Sljedeća',
+	'photos.noSettlement': 'Nema takvog naselja',
 	'photos.notThisPerson': 'Nije ova osoba — skida ime s ovog lica',
 	'photos.photo': 'Fotografija',
 	'photos.placeSpread.few': 'upisano na {n} fotografije',

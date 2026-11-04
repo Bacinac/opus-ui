@@ -100,6 +100,7 @@ export const en = {
 	'photos.empty': 'No photos here yet.',
 	'photos.jump': 'Jump to a period',
 	'photos.next': 'Next',
+	'photos.noSettlement': 'No such town',
 	'photos.notThisPerson': 'Not this person — takes the name off this face',
 	'photos.photo': 'Photograph',
 	'photos.placeSpread.few': 'written on {n} photos',
