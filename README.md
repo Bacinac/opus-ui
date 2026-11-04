@@ -50,6 +50,9 @@ Frame
   time behind a picker, each line with its still, running time and how far the
   profile got. `StateMark` says a state as one tinted icon, its words on the
   pointer; `Tally` says a season as icon-and-number counts
+- `Clamped` — text kept to `--lines` lines with „Prikaži više” under it, shown
+  when the text is cut or when `beyond` says more opens with it; the head's
+  description is one
 
 Photographs (imported by path — they need `thumbhash`)
 - `PhotoTimeline`, `PhotoViewer`

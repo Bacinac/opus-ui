@@ -6,7 +6,7 @@
 	// where the pages genuinely differ.
 
 	import type { Snippet } from 'svelte';
-	import { t } from '../kit/i18n.svelte';
+	import Clamped from './Clamped.svelte';
 
 	let {
 		title,
@@ -50,11 +50,6 @@
 		actions?: Snippet;
 	} = $props();
 
-	// The head is the top of a page, not the page, so a long description is
-	// clamped. But clamping without a way out is just text nobody can read:
-	// whether there IS more is a question about the rendered box, not about the
-	// string — the clamp moves with the height of the screen — so it is measured
-	// rather than guessed from a character count.
 	/** A picture that does not arrive is a picture the head must not keep room
 	 *  for. The address can be the playing device's own artwork endpoint, which
 	 *  answers for the device and not for us. */
@@ -62,25 +57,6 @@
 	$effect(() => {
 		void poster;
 		lost = false;
-	});
-
-	let paragraph = $state<HTMLParagraphElement | null>(null);
-	let opened = $state(false);
-	let over = $state(false);
-
-	$effect(() => {
-		// re-measure when the text changes or the box is resized
-		void overview;
-		const box = paragraph;
-		if (!box) return;
-		const measure = () => {
-			if (opened) return;
-			over = box.scrollHeight > box.clientHeight + 1;
-		};
-		measure();
-		const watch = new ResizeObserver(measure);
-		watch.observe(box);
-		return () => watch.disconnect();
 	});
 </script>
 
@@ -109,14 +85,7 @@
 				</p>
 			{/if}
 			{#if under}{@render under()}{/if}
-			{#if overview}
-				<p class="overview" class:opened bind:this={paragraph}>{overview}</p>
-				{#if over}
-					<button class="more" type="button" onclick={() => (opened = !opened)}>
-						{opened ? t('head.less') : t('head.more')}
-					</button>
-				{/if}
-			{/if}
+			<Clamped text={overview} class="overview" />
 			{#if actions}<div class="actions">{@render actions()}</div>{/if}
 		</div>
 	</div>
@@ -241,39 +210,12 @@
 	}
 	/* However much there is to say, the head is the top of a page and not the
 	   page: what does not fit is one press away on every screen that has one. */
-	.overview {
+	.what :global(.overview) {
 		margin-bottom: 0;
-		display: -webkit-box;
-		-webkit-box-orient: vertical;
-		-webkit-line-clamp: 4;
-		line-clamp: 4;
-		overflow: hidden;
 		/* wide enough to use the room a desktop window gives, short of the line
 		   length at which the eye loses its place coming back */
 		max-width: 100ch;
 		line-height: 1.55;
-		white-space: pre-line;
-	}
-	.overview.opened {
-		-webkit-line-clamp: none;
-		line-clamp: none;
-		display: block;
-		overflow: visible;
-	}
-	/* A line of its own for four words is a line spent on the way OUT of the
-	   text rather than on the text. It sits tight under the last line it is
-	   about, and what follows the head comes up to meet it. */
-	.more {
-		align-self: start;
-		margin-top: 0.1rem;
-		padding: 0;
-		border: 0;
-		background: none;
-		color: var(--accent);
-		font: inherit;
-		font-size: 0.9em;
-		cursor: pointer;
-		text-decoration: underline;
 	}
 	.actions {
 		/* on the poster's bottom edge, whatever there was room to say above it */
@@ -285,15 +227,13 @@
 	}
 	/* a screen this short is one where four lines of description is a third of it */
 	@media (max-height: 700px) {
-		.overview:not(.opened) {
-			-webkit-line-clamp: 3;
-			line-clamp: 3;
+		.what {
+			--lines: 3;
 		}
 	}
 	@media (max-height: 620px) {
-		.overview:not(.opened) {
-			-webkit-line-clamp: 2;
-			line-clamp: 2;
+		.what {
+			--lines: 2;
 		}
 	}
 	@media (max-width: 40rem) {

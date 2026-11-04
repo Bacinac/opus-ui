@@ -16,6 +16,7 @@ export { helpFor } from './help';
 export { episodeCode, videoStateMark } from './media';
 export { tileOf, previewOf, playOf, aboutOf, cropOf, portraitOf, morphOf, placeholderOf, groundOf, regrouping, unlessRegrouping } from './photos';
 export { default as EpisodeRow } from './EpisodeRow.svelte';
+export { default as Clamped } from './Clamped.svelte';
 export { default as MediaHead } from './MediaHead.svelte';
 export { default as SeriesPage } from './SeriesPage.svelte';
 export type { PageEpisode, PageSeason, PageTag } from './SeriesPage.svelte';
