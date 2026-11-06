@@ -13,9 +13,9 @@
 
 	import { json, request } from '../kit/http';
 	import { formatDate, formatNumber, plural, t } from '../kit/i18n.svelte';
+	import { tick, type ComponentProps } from 'svelte';
 	import { aboutOf, groundOf, placeholderOf, tileOf, unlessRegrouping } from './photos';
 	import PhotoViewer from './PhotoViewer.svelte';
-	import type { ComponentProps } from 'svelte';
 	import type { SvelteSet } from 'svelte/reactivity';
 
 	// The same shelf, sometimes narrowed to one place. Narrowing rather than a
@@ -451,6 +451,24 @@
 		if (to >= 0 && to < total) open = to;
 	}
 
+	/** Leaving the viewer lands on the photograph it ended on, not the one it was
+	 *  opened from: whoever stepped through a hundred pictures goes on from there. */
+	async function close() {
+		const at = open;
+		open = null;
+		if (at === null) return;
+		await tick();
+		const block = laid.blocks.find((b) => at >= b.index && at < b.index + b.count);
+		if (!block) return;
+		const y = block.top + Math.floor((at - block.index) / cols) * row;
+		if (y < scrollTop || y + row > scrollTop + viewport) {
+			jump((y - Math.max(0, (viewport - row) / 2)) / laid.height);
+		}
+		requestAnimationFrame(() => {
+			box?.querySelector<HTMLElement>(`[data-at="${at}"]`)?.focus({ preventScroll: true });
+		});
+	}
+
 	const nearby = $derived.by(() => {
 		if (open === null) return [];
 		return [photos[open - 1], photos[open + 1]]
@@ -527,6 +545,7 @@
 						{@const may = !chosen || (photo !== undefined && choosable(photo))}
 						<button
 							class="cell"
+							data-at={i}
 							class:chosen={photo !== undefined && chosen?.has(photo.id)}
 							class:barred={!may}
 							type="button"
@@ -647,7 +666,7 @@
 			neighbours={nearby}
 			{plays}
 			{actions}
-			onclose={() => (open = null)}
+			onclose={close}
 			onprev={() => step(-1)}
 			onnext={() => step(1)}
 		/>

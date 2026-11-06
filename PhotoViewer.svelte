@@ -16,7 +16,7 @@
 	import { cssUrl } from '../kit/css';
 	import { json, Latest, request } from '../kit/http';
 	import { formatDateTime, formatNumber, i18n, plural, t } from '../kit/i18n.svelte';
-	import { layer } from '../kit/layers';
+	import { holdScroll, layer } from '../kit/layers';
 	import { aboutOf, playOf, previewOf, unlessRegrouping } from './photos';
 	import Tag from '../kit/Tag.svelte';
 
@@ -125,10 +125,9 @@
 	) ?? [])].filter((el) => el.offsetParent !== null || el.getClientRects().length > 0);
 	onMount(() => {
 		const before = document.activeElement as HTMLElement | null;
-		const overflow = document.body.style.overflow;
 		// the page behind must not scroll under the overlay — on a phone that is how
 		// a swipe meant for the next photograph moves the grid instead
-		document.body.style.overflow = 'hidden';
+		const release = holdScroll();
 		panel?.focus();
 		const contain = () => {
 			if (here.top() && !panel?.contains(document.activeElement)) panel?.focus();
@@ -136,7 +135,7 @@
 		document.addEventListener('focusin', contain, true);
 		return () => {
 			document.removeEventListener('focusin', contain, true);
-			document.body.style.overflow = overflow;
+			release();
 			if (before?.isConnected) before.focus();
 		};
 	});
