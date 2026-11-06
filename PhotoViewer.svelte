@@ -126,6 +126,8 @@
 	onMount(() => {
 		const before = document.activeElement as HTMLElement | null;
 		const overflow = document.body.style.overflow;
+		// the page behind must not scroll under the overlay — on a phone that is how
+		// a swipe meant for the next photograph moves the grid instead
 		document.body.style.overflow = 'hidden';
 		panel?.focus();
 		const contain = () => {
@@ -181,16 +183,6 @@
 	// press will make, so the cache holds the answer before it is asked.
 	$effect(() => {
 		for (const n of neighbours) new Image().src = shows(n.id, n.turn);
-	});
-
-	// the page behind must not scroll under the overlay — on a phone that is how
-	// a swipe meant for the next photograph moves the grid instead
-	$effect(() => {
-		const had = document.body.style.overflow;
-		document.body.style.overflow = 'hidden';
-		return () => {
-			document.body.style.overflow = had;
-		};
 	});
 
 	// Who is in the picture. Asked per photograph rather than carried in the grid

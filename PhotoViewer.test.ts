@@ -14,6 +14,22 @@ afterEach(async () => {
 	vi.restoreAllMocks();
 });
 
+test('closing the viewer gives the page its scroll back', async () => {
+	document.body.innerHTML = '<main></main>';
+	document.body.style.overflow = '';
+	flushSync(() => {
+		viewer = mount(PhotoViewer, { target: document.querySelector('main')!, props: {
+			photo: { id: '1', kind: 'image', taken_at: null, dated: '', w: 100, h: 100,
+				hash: null, ready: true, undecodable: false, turn: 0 },
+			about: false, onclose: vi.fn()
+		} });
+	});
+	expect(document.body.style.overflow).toBe('hidden');
+	await unmount(viewer!);
+	viewer = null;
+	expect(document.body.style.overflow).toBe('');
+});
+
 test('focus stays in the viewer, every D-pad action is reachable, and closing restores the grid', async () => {
 	document.body.innerHTML = '<button id="behind">Grid tile</button><main></main>';
 	const behind = document.querySelector<HTMLButtonElement>('#behind')!;
