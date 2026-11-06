@@ -87,3 +87,48 @@ test('focus stays in the viewer, every D-pad action is reachable, and closing re
 	viewer = null;
 	expect(document.activeElement).toBe(behind);
 });
+
+test('an unnamed face is given to somebody from the viewer, and the next one is asked about', async () => {
+	document.body.innerHTML = '<main></main>';
+	const onfaces = vi.fn();
+	const box = { x: 0.1, y: 0.1, w: 0.1, h: 0.1 };
+	const sent: unknown[] = [];
+	vi.spyOn(globalThis, 'fetch').mockImplementation(async (url, init) => {
+		const path = String(url);
+		if (path.includes('/faces/person')) {
+			sent.push(JSON.parse(String(init?.body)));
+			return Response.json({ faces: 1, person: { id: 7, name: 'Jana' } });
+		}
+		if (path.includes('/people')) return Response.json([{ name: 'Eva' }]);
+		return Response.json({ id: '1', faces: [
+			{ id: 1, ...box, person: null },
+			{ id: 2, ...box, person: null }
+		] });
+	});
+	flushSync(() => {
+		viewer = mount(PhotoViewer, { target: document.querySelector('main')!, props: {
+			photo: { id: '1', kind: 'image', taken_at: null, dated: '', w: 100, h: 100,
+				hash: null, ready: true, undecodable: false, turn: 0 },
+			canEdit: true, onfaces, onclose: vi.fn()
+		} });
+	});
+	const add = await vi.waitFor(() => {
+		const found = [...document.querySelectorAll<HTMLElement>('.who button')].at(-1);
+		expect(found?.textContent).toContain('2');
+		return found!;
+	});
+	add.click();
+	flushSync();
+	const input = () => document.querySelector<HTMLInputElement>('input[list="viewer-people"]')!;
+	input().value = 'Jana';
+	input().dispatchEvent(new Event('input', { bubbles: true }));
+	input().dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+	await vi.waitFor(() => expect(onfaces).toHaveBeenCalledOnce());
+	flushSync();
+	expect(sent).toEqual([{ name: 'Jana', faces: [1], ignore_dates: false }]);
+	expect(document.querySelector('.who')?.textContent).toContain('Jana');
+	expect(input().value).toBe('');
+	window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+	flushSync();
+	expect(input()).toBeNull();
+});

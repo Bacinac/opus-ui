@@ -15,9 +15,9 @@
 	import Button from '../kit/Button.svelte';
 	import { cssUrl } from '../kit/css';
 	import { json, Latest, request } from '../kit/http';
-	import { formatDateTime, formatNumber, i18n, plural, t } from '../kit/i18n.svelte';
+	import { formatDate, formatDateTime, formatNumber, i18n, plural, t } from '../kit/i18n.svelte';
 	import { holdScroll, layer } from '../kit/layers';
-	import { aboutOf, playOf, previewOf, unlessRegrouping } from './photos';
+	import { aboutOf, playOf, previewOf, regrouping, unlessRegrouping } from './photos';
 	import Tag from '../kit/Tag.svelte';
 
 	type Photo = {
@@ -60,13 +60,16 @@
 		// library's upkeep. Off by default so a surface that only shows
 		// photographs gets no control it would be refused for pressing, and so a
 		// new caller has to ask for it.
-		canEdit = false
+		canEdit = false,
+		onfaces
 	}: {
 		photo: Photo;
 		placeholder?: string;
 		hasPrev?: boolean;
 		hasNext?: boolean;
 		canEdit?: boolean;
+		/** a face in the picture was given to somebody or taken off them */
+		onfaces?: () => void;
 		onclose: () => void;
 		/** absent where the photograph stands alone, with nothing either side of it */
 		onprev?: () => void;
@@ -115,7 +118,8 @@
 	}
 
 	const here = layer(() => {
-		if (naming) naming = false;
+		if (giving !== null) stopGiving();
+		else if (naming) naming = false;
 		else onclose();
 	});
 	$effect(() => here.drop);
@@ -145,6 +149,10 @@
 		const active = document.activeElement;
 		const offered = stops();
 		if (e.key === 'Escape') {
+			if (giving !== null) {
+				stopGiving();
+				return;
+			}
 			if (naming) return;
 			onclose();
 		} else if (e.key === 'Tab') {
@@ -153,7 +161,7 @@
 				(e.shiftKey ? active === offered[0] : active === offered.at(-1))) {
 				(e.shiftKey ? offered.at(-1)! : offered[0]).focus();
 			} else return;
-		} else if (!naming && e.key.startsWith('Arrow')) {
+		} else if (!naming && giving === null && e.key.startsWith('Arrow')) {
 			const controls = offered.filter((el) => !el.classList.contains('step'));
 			const at = controls.indexOf(active as HTMLElement);
 			if (at < 0) {
@@ -232,6 +240,7 @@
 		// turning drops the faces and finds them again in the new frame
 		photo.turn;
 		faces = [];
+		giving = null;
 		if (!about) return;
 		request<{
 			id: string;
@@ -261,6 +270,56 @@
 	async function detach(id: number) {
 		if (!(await request('/api/photos/faces/detach', json({ faces: [id] }), unlessRegrouping))) return;
 		faces = faces.map((f) => (f.id === id ? { ...f, person: null } : f));
+		onfaces?.();
+	}
+
+	type Refusal = { person: string; born_on: string; earliest_photograph: string };
+	// the face a name is being typed for
+	let giving = $state<number | null>(null);
+	let given = $state('');
+	let refusal = $state<Refusal | null>(null);
+	let people = $state<string[]>([]);
+	let peopleAsked = false;
+
+	async function startGiving(id: number) {
+		naming = false;
+		giving = id;
+		given = '';
+		refusal = null;
+		if (peopleAsked) return;
+		peopleAsked = true;
+		const got = await request<{ name: string }[]>('/api/photos/people');
+		if (got) people = got.map((p) => p.name);
+	}
+
+	function stopGiving() {
+		giving = null;
+		panel?.focus();
+	}
+
+	async function give(force = false) {
+		const name = given.trim();
+		const id = giving;
+		if (!name || id === null) return;
+		refusal = null;
+		const got = await request<{ person: { id: number; name: string } }>(
+			'/api/photos/faces/person',
+			json({ name, faces: [id], ignore_dates: force }),
+			{
+				on: {
+					409: (body: Record<string, unknown>) => {
+						if (!regrouping(body)) refusal = body.detail as Refusal;
+					}
+				}
+			}
+		);
+		if (!got) return;
+		faces = faces.map((f) => (f.id === id ? { ...f, person: got.person } : f));
+		if (!people.includes(got.person.name)) people = [...people, got.person.name];
+		onfaces?.();
+		const rest = faces.find((f) => !f.person);
+		if (rest) startGiving(rest.id);
+		else stopGiving();
 	}
 
 	function takeFocus(node: HTMLInputElement) {
@@ -360,14 +419,17 @@
 						<button
 							class="box"
 							class:named={!!f.person}
-							class:onto={onto === f.id}
+							class:onto={onto === f.id || giving === f.id}
 							style:left="{f.x * 100}%"
 							style:top="{f.y * 100}%"
 							style:width="{f.w * 100}%"
 							style:height="{f.h * 100}%"
 							onmouseenter={() => (onto = f.id)}
 							onmouseleave={() => (onto = null)}
-							onclick={() => (onto = onto === f.id ? null : f.id)}
+							onclick={() => {
+								if (canEdit && !f.person) startGiving(f.id);
+								else onto = onto === f.id ? null : f.id;
+							}}
 							aria-label={f.person?.name ?? t('photos.unknownFace')}
 						>
 							{#if f.person}<span class="label">{f.person.name}</span>{/if}
@@ -425,6 +487,7 @@
 						onpicture
 						tone={place ? 'fact' : 'quiet'}
 						onclick={() => {
+							giving = null;
 							naming = true;
 							said = place ?? '';
 						}}
@@ -440,6 +503,38 @@
 					</Tag>
 				{/if}
 			</p>
+		{/if}
+		{#if giving !== null}
+			{#key giving}
+				<p class="place">
+					<input
+						use:takeFocus
+						list="viewer-people"
+						bind:value={given}
+						placeholder={t('photos.faceWho')}
+						aria-label={t('photos.faceWho')}
+						onkeydown={(e) => e.key === 'Enter' && give()}
+					/>
+					<datalist id="viewer-people">
+						{#each people as name (name)}<option value={name}></option>{/each}
+					</datalist>
+					{#if given.trim()}
+						<Tag onpicture onclick={() => give()}>{t('photos.faceGive')}</Tag>
+					{/if}
+				</p>
+			{/key}
+			{#if refusal}
+				<p class="place">
+					<Tag onpicture tone="quiet">
+						{t('photos.faceRefused', {
+							who: refusal.person,
+							born: formatDate(refusal.born_on),
+							first: formatDate(refusal.earliest_photograph)
+						})}
+					</Tag>
+					<Tag onpicture onclick={() => give(true)}>{t('photos.faceAnyway')}</Tag>
+				</p>
+			{/if}
 		{/if}
 		{#if faces.length}
 			<p class="who">
@@ -457,7 +552,15 @@
 						{/if}
 					</Tag>
 				{/each}
-				{#if unnamed}
+				{#if unnamed && canEdit}
+					<Tag
+						onpicture
+						tone="quiet"
+						onclick={() => startGiving(faces.find((f) => !f.person)!.id)}
+					>
+						{t('photos.faceAdd', { n: formatNumber(unnamed) })}
+					</Tag>
+				{:else if unnamed}
 					<Tag onpicture tone="quiet">{t('photos.unknownFaces', { n: formatNumber(unnamed) })}</Tag>
 				{/if}
 			</p>
